@@ -8,6 +8,7 @@
 #define TOTAL_MESES (ANIOS * MESES)
 
 int cubo[PRODUCTOS][ANIOS][MESES];
+
 void cargar_datos(char *ruta)
 {
     FILE *archivo = fopen(ruta, "r");
@@ -20,7 +21,15 @@ void cargar_datos(char *ruta)
     int p = 0;
     while (fgets(linea, sizeof(linea), archivo) != NULL && p < PRODUCTOS)
     {
-        char *token = strtok(linea, ";\r\n");
+        char *texto = linea;
+
+        // si es la primera fila, omite los 3 caracteres invisibles del dataset
+        if (p == 0 && (unsigned char)linea[0] == 239)
+        {
+            texto = linea + 3;
+        }
+
+        char *token = strtok(texto, ";\r\n");
         int mes_absoluto = 0;
 
         while (token != NULL && mes_absoluto < TOTAL_MESES)
@@ -59,7 +68,7 @@ int pedir_numero(char *mensaje)
     return valor;
 }
 
-// encuentra el producto mss vendido en un rango de meses
+// encuentra el producto mas vendido en un rango de meses
 void mas_vendido_rango(int ini, int fin)
 {
     int mejor_producto = 0;
@@ -76,6 +85,7 @@ void mas_vendido_rango(int ini, int fin)
     }
     printf("producto %d con %ld unidades\n", mejor_producto + 1, max_ventas);
 }
+
 void q1_anio()
 {
     int a = pedir_numero("anio (1-6)") - 1;
@@ -114,7 +124,8 @@ void promedio_max_rango(int ini, int fin)
     }
     printf("producto %d con promedio %.2f unidades/mes\n", mejor_producto + 1, max_promedio);
 }
-// funcioones para encontrar el mayor promedio de ventas
+
+// funciones para encontrar el mayor promedio de ventas
 void q2_cada_anio()
 {
     for (int a = 0; a < ANIOS; a++)
